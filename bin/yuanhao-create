@@ -1,0 +1,74 @@
+#!/usr/bin/env node
+
+const program = require("commander");
+const ora = require("ora");
+const download = require("download-git-repo");
+const symbols = require("log-symbols");
+const chalk = require("chalk");
+const spinner = ora("Downloading...");
+const { logSuccess } = require("../common.js");
+var figlet = require("figlet");
+
+figlet("welcome to yuanhao cli", function (err, data) {
+  if (err) {
+    console.log("出错啦..");
+    console.dir(err);
+    return;
+  }
+  console.log(data);
+
+  chalk.level = 1;
+
+  logSuccess(["yuanhao-create 你的项目名称 即可创建"]);
+  const templateList = require("../constant");
+  const inquirer = require("inquirer");
+  // console.log(templateList);
+
+  program.usage("[folder-name]");
+  program.parse(process.argv);
+  // 当没有输入参数的时候给个提示
+  if (program.args.length < 1) return program.help();
+  const projectName = program.args[0];
+
+  let question = [
+    {
+      type: "list",
+      name: "template",
+      message: "请选择一个模板",
+      choices: templateList.map((item) => item.name),
+      validate(val) {
+        if (!val) {
+          return "Name is required!";
+        } else {
+          return true;
+        }
+      },
+    },
+  ];
+
+  inquirer.prompt(question).then((answers) => {
+    // 出现加载图标
+    spinner.start();
+    const { template } = answers;
+    const { url, name } = templateList.find((item) => item.name === template);
+    // 下载模板
+    clone(url, name);
+  });
+
+  function clone(url, name) {
+    download(`direct:${url}`, `./${projectName}`, { clone: true }, (err) => {
+      if (err) {
+        spinner.fail();
+        console.log(
+          chalk.red(symbols.error),
+          chalk.red(`Generation failed. ${err}`)
+        );
+        return;
+      }
+      // 结束加载图标
+      spinner.succeed();
+      console.log(chalk.green(symbols.success), chalk.green(`${name} 已生成`));
+      console.log(`\n  请执行  cd ${projectName} && npm i`);
+    });
+  }
+});
