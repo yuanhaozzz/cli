@@ -1,6 +1,6 @@
 {
   "name": "yuanhao-cli",
-  "version": "1.9.1",
+  "version": "2.0",
   "description": "",
   "main": "index.js",
   "bin": {

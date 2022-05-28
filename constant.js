@@ -17,6 +17,6 @@ module.exports = [
   },
   {
     name: "react 移动端 多页应用 按需打包",
-    url: "https://github.com/yuanhaozzz/react-cli-single-mobile.git",
+    url: "https://github.com/yuanhaozzz/react-cli-multi-mobile.git",
   },
 ];
